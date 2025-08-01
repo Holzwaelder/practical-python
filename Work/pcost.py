@@ -11,11 +11,12 @@ def portfolio_cost(filename):
         rows = csv.reader(f)
         header = next(rows)
         amount = 0
-        for row in rows:            
+        for i, row in enumerate(rows, start=1): 
+            record = dict(zip(header, row))           
             try:
-                amount += int(row[1]) * float(row[2])
+                amount += int(record["shares"]) * float(record["price"])
             except ValueError:
-                print("Value is not present!")
+                print(f"Row {i}: Couldn't convert: {row}")
         return amount
 
 if len(sys.argv) == 2:
