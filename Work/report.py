@@ -51,16 +51,29 @@ def make_report(portfolio, prices):
         report.append((share["name"], int(share["shares"]), float(prices[share["name"]]), change))
     return report
 
-portfolio = read_portfolio("Data/portfolio.csv")
-prices = read_prices("Data/prices.csv")
-reports = make_report(portfolio, prices)
-header = ("Name", "Shares", "Price", "Change")
+def print_report(reports):
+    """
+    Takes a report tuple(Name, Shares, Price, Change) and prints it nicely formatted to the screen
+    """
+    header = ("Name", "Shares", "Price", "Change")
+    print("%10s %10s %10s %10s" % header)
+    print(f"{'':->10} "*len(header))
+    for report in reports:
+        #print("%10s %10d %10.2f %10.2f" % report) printf - C like Umsetzung
+        print(f"{report[0]:>10} {report[1]:>10d} {f'${report[2]:.2f}':>10} {report[3]:>10.2f}")
+        
+def portfolio_report(file1, file2):
+    """ 
+    Takes tow files file1: Portfolio of owned stocks file2: actual price file of stocks and prints the final report with change value
+    """    
+    print_report(make_report(read_portfolio(file1), read_prices(file2)))
+    
+portfolio_report("Data/portfolio.csv", "Data/prices.csv")
 
-print("%10s %10s %10s %10s" % header)
-print(f"{'':->10} "*len(header))
-for report in reports:
-    #print("%10s %10d %10.2f %10.2f" % report) printf - C like Umsetzung
-    print(f"{report[0]:>10} {report[1]:>10d} {f'${report[2]:.2f}':>10} {report[3]:>10.2f}")
+
+
+
+
 
 
 
