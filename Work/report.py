@@ -1,45 +1,20 @@
 # report.py
 #
 # Exercise 2.4
-import csv
+from fileparse import parse_csv
 
 def read_portfolio(filename):
     "Reads Data out of a given file and returns a list of tuples"
     
-    portfolio = []
+    with open(filename) as lines:
+        return parse_csv(lines, select=["name", "shares", "price"], types=[str, int, float])     
     
-    with open(filename, "rt") as f:
-        rows = csv.reader(f)
-        header = next(rows)       
-        for rown, row in enumerate(rows, start=1):
-            report = dict(zip(header, row))
-            try:
-                stocks = {
-                    "name" : report["name"],
-                    "shares" : int(report["shares"]),
-                    "price" : float(report["price"])
-                }                       
-                portfolio.append(stocks) 
-            except ValueError:
-                print(f"Wrong Value in line {rown} -> {row}")
-            except KeyError:
-                print(f"Wrong key in line {rown} -> {row}")         
-        return portfolio
     
 def read_prices(filename):
     "Reads prices out of a given file and returns a dictionary"
     
-    prices = {}
-    
-    with open(filename, "rt") as f:
-        rows = csv.reader(f)        
-        for row in rows:            
-            if len(row) == 2 and row[0] and row[1]:
-                try:
-                    prices[row[0]] = float(row[1])
-                except ValueError:
-                    print(f"Invalid price for {row[0]}: {row[1]}")              
-        return prices
+    with open(filename) as lines:     
+        return dict(parse_csv(lines, has_header=False, types=[str, float]))
     
 def make_report(portfolio, prices):
     "Takes a list of the portfolio as well as a dictionary with prices and return a list of tuple"
@@ -65,12 +40,21 @@ def print_report(reports):
 def portfolio_report(file1, file2):
     """ 
     Takes tow files file1: Portfolio of owned stocks file2: actual price file of stocks and prints the final report with change value
-    """    
-    print_report(make_report(read_portfolio(file1), read_prices(file2)))
+    """
     
-portfolio_report("Data/portfolio.csv", "Data/prices.csv")
+    portfolio = read_portfolio(file1)
+    prices = read_prices(file2)
+    report = make_report(portfolio, prices)
+    print_report(report)
 
+def main(argv):
+    if len(argv) != 3:
+        raise SystemExit("Falsche Eingabe in Kommandozeile")
+    portfolio_report(argv[1], argv[2])
 
+if __name__ == "__main__":
+    import sys
+    main(sys.argv)
 
 
 
